@@ -18,7 +18,31 @@ app.get("/", function (req, res) {
     res.render("index", { files: files });
   });
 });
-
+app.get("/files/:fileName", function (req, res) {
+  fs.readFile(
+    `./files/${req.params.fileName}`,
+    "utf-8",
+    function (err, fileData) {
+      console.log(fileData);
+      res.render("show", {
+        fileName: req.params.fileName,
+        fileData: fileData,
+      });
+    }
+  );
+});
+app.get("/edit/:fileName", function (req, res) {
+  res.render("edit", { fileName: req.params.fileName });
+});
+app.post("/edit", function (req, res) {
+  fs.rename(
+    `./files/${req.body.previous}`,
+    `./files/${req.body.new}`,
+    function (err) {
+      res.redirect("/");
+    }
+  );
+});
 app.post("/create", function (req, res) {
   const filename = req.body.title.split(" ").join("") + ".txt";
   fs.writeFile(`./files/${filename}`, req.body.details, function (err) {
